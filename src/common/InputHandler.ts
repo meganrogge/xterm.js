@@ -437,6 +437,10 @@ export class InputHandler extends Disposable implements IInputHandler {
     // 117 - Reset highlight color.
     // 118 - Reset Tektronix cursor color.
     // 119 - Reset highlight foreground color.
+    // 133 - Shell Integration - Final Term - Prompt start, end, command executed
+    this._parser.registerOscHandler(133, new OscHandler(data => this.saveCommand(data)));
+    // 1337 - Shell integration - User name, remote host, current directory
+    this._parser.registerOscHandler(1337, new OscHandler(data => this.saveShellInfo(data)));
 
     /**
      * ESC handlers
@@ -3012,6 +3016,22 @@ export class InputHandler extends Disposable implements IInputHandler {
    */
   public restoreCursorColor(data: string): boolean {
     this._onColor.fire([{ type: ColorRequestType.RESTORE, index: ColorIndex.CURSOR }]);
+    return true;
+  }
+
+  /**
+   *  TODO
+   */
+  public saveShellInfo(data: string): boolean {
+    this._logService.debug('saving shell info', data);
+    return true;
+  }
+
+  /**
+   *  TODO
+   */
+  public saveCommand(data: string): boolean {
+    this._logService.debug('saving command', data);
     return true;
   }
 
