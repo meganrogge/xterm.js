@@ -265,6 +265,8 @@ export class InputHandler extends Disposable implements IInputHandler {
   public get onTitleChange(): IEvent<string> { return this._onTitleChange.event; }
   private _onColor = new EventEmitter<IColorEvent>();
   public get onColor(): IEvent<IColorEvent> { return this._onColor.event; }
+  private _onIntegratedShellChange = new EventEmitter<string>();
+  public get onIntegratedShellChange(): IEvent<string> { return this._onIntegratedShellChange.event; }
 
   private _parseStack: IParseStack = {
     paused: false,
@@ -437,9 +439,9 @@ export class InputHandler extends Disposable implements IInputHandler {
     // 117 - Reset highlight color.
     // 118 - Reset Tektronix cursor color.
     // 119 - Reset highlight foreground color.
-    // 133 - Shell Integration - Final Term - Prompt start, end, command executed
-    this._parser.registerOscHandler(133, new OscHandler(data => this.saveCommand(data)));
-    // 1337 - Shell integration - User name, remote host, current directory
+    // 133 - Shell Integration - Prompt or Command (start, execute, or finished)
+    this._parser.registerOscHandler(133, new OscHandler(data => this.saveShellInteraction(data)));
+    // 1337 - Shell integration - Username, remote host, current directory
     this._parser.registerOscHandler(1337, new OscHandler(data => this.saveShellInfo(data)));
 
     /**
@@ -3020,18 +3022,60 @@ export class InputHandler extends Disposable implements IInputHandler {
   }
 
   /**
-   *  TODO
+   * OSC 1337 - Shell Integration - username, remote host, current directory
+   *
+   * @vt: #Y  OSC   1337    "Shell Integration - username, remote host, current directory"
    */
   public saveShellInfo(data: string): boolean {
-    this._logService.debug('saving shell info', data);
+    let info: string | undefined;
+    const [type, value] = data.split('=');
+    this._logService.debug('type', type);
+    this._logService.debug('value', value);
+    this._logService.debug(ShellIntegrationInfo.CURRENT_DIR);
+    switch (type) {
+      case ShellIntegrationInfo.CURRENT_DIR:
+        info = value;
+        break;
+      case ShellIntegrationInfo.REMOTE_HOST:
+        info = value;
+        break;
+    }
+    if (!info) {
+      return false;
+    }
+    this._logService.debug('info', info);
+    this._onIntegratedShellChange.fire(info);
     return true;
   }
 
   /**
-   *  TODO
+   *  OSC 133 -  Shell Integration - Prompt or Command (start, execute, or finished)
+   *
+   *  @vt: #Y  OSC   133    "Shell Integration - Prompt or Command (start, execute, or finished)"
    */
-  public saveCommand(data: string): boolean {
-    this._logService.debug('saving command', data);
+  public saveShellInteraction(data: string): boolean {
+    let interaction: ShellIntegrationInteraction | undefined;
+    const [type, exitCode] = data.split(';');
+    switch (type) {
+      case 'A':
+        interaction = ShellIntegrationInteraction.PROMPT_START;
+        break;
+      case 'B':
+        interaction = ShellIntegrationInteraction.COMMAND_START;
+        break;
+      case 'C':
+        interaction = ShellIntegrationInteraction.COMMAND_EXECUTED;
+        break;
+      case 'D':
+        interaction = ShellIntegrationInteraction.COMMAND_FINISHED;
+        break;
+    }
+    const change = exitCode || interaction;
+    if (!change) {
+      return false;
+    }
+    this._logService.debug('interaction', exitCode ? `completed command ${exitCode}` : interaction);
+    this._onIntegratedShellChange.fire(change);
     return true;
   }
 
@@ -3246,4 +3290,16 @@ export class InputHandler extends Disposable implements IInputHandler {
     this._setCursor(0, 0);
     return true;
   }
+}
+
+const enum ShellIntegrationInteraction {
+  PROMPT_START = 'PROMPT_START',
+  COMMAND_START = 'COMMAND_START',
+  COMMAND_EXECUTED = 'COMMAND_EXECUTED',
+  COMMAND_FINISHED = 'COMMAND_FINISHED'
+}
+
+const enum ShellIntegrationInfo {
+  REMOTE_HOST = 'RemoteHost=',
+  CURRENT_DIR = 'CurrentDir=',
 }
