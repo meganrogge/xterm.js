@@ -41,6 +41,7 @@ export interface IPublicTerminal extends IDisposable {
   onKey: IEvent<{ key: string, domEvent: KeyboardEvent }>;
   onLineFeed: IEvent<void>;
   onScroll: IEvent<number>;
+  onIntegratedShellChange: IEvent<{ type: string, value: string }>;
   onSelectionChange: IEvent<void>;
   onRender: IEvent<{ start: number, end: number }>;
   onResize: IEvent<{ cols: number, rows: number }>;

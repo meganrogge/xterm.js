@@ -265,8 +265,8 @@ export class InputHandler extends Disposable implements IInputHandler {
   public get onTitleChange(): IEvent<string> { return this._onTitleChange.event; }
   private _onColor = new EventEmitter<IColorEvent>();
   public get onColor(): IEvent<IColorEvent> { return this._onColor.event; }
-  private _onIntegratedShellChange = new EventEmitter<string>();
-  public get onIntegratedShellChange(): IEvent<string> { return this._onIntegratedShellChange.event; }
+  private _onIntegratedShellChange = new EventEmitter<IShellChangeEvent>();
+  public get onIntegratedShellChange(): IEvent<IShellChangeEvent> { return this._onIntegratedShellChange.event; }
 
   private _parseStack: IParseStack = {
     paused: false,
@@ -3027,21 +3027,23 @@ export class InputHandler extends Disposable implements IInputHandler {
    * @vt: #Y  OSC   1337    "Shell Integration - username, remote host, current directory"
    */
   public saveShellInfo(data: string): boolean {
-    let info: string | undefined;
-    const [type, value] = data.split('=');
+    let value: string | undefined;
+    const [type, info] = data.split('=');
     switch (type) {
       case ShellIntegrationInfo.CURRENT_DIR:
-        info = value;
+        value = info;
         break;
       case ShellIntegrationInfo.REMOTE_HOST:
-        info = value;
+        value = info;
         break;
+      default:
+        return false;
     }
-    if (!info) {
+    if (!value) {
       return false;
     }
-    this._logService.debug('saving shell info', info);
-    this._onIntegratedShellChange.fire(info);
+    this._logService.debug('saving shell info', value);
+    this._onIntegratedShellChange.fire({ type, value });
     return true;
   }
 
@@ -3051,28 +3053,30 @@ export class InputHandler extends Disposable implements IInputHandler {
    *  @vt: #Y  OSC   133    "Shell Integration - Prompt or Command (start, execute, or finished)"
    */
   public saveShellInteraction(data: string): boolean {
-    let interaction: ShellIntegrationInteraction | undefined;
-    const [type, exitCode] = data.split(';');
-    switch (type) {
+    let type: ShellIntegrationInteraction | undefined;
+    const [command, exitCode] = data.split(';');
+    switch (command) {
       case 'A':
-        interaction = ShellIntegrationInteraction.PROMPT_START;
+        type = ShellIntegrationInteraction.PROMPT_START;
         break;
       case 'B':
-        interaction = ShellIntegrationInteraction.COMMAND_START;
+        type = ShellIntegrationInteraction.COMMAND_START;
         break;
       case 'C':
-        interaction = ShellIntegrationInteraction.COMMAND_EXECUTED;
+        type = ShellIntegrationInteraction.COMMAND_EXECUTED;
         break;
       case 'D':
-        interaction = ShellIntegrationInteraction.COMMAND_FINISHED;
+        type = ShellIntegrationInteraction.COMMAND_FINISHED;
         break;
+      default:
+        return false;
     }
-    const change = exitCode || interaction;
-    if (!change) {
+    const value = exitCode || type;
+    if (!value) {
       return false;
     }
-    this._logService.debug('interaction', exitCode ? `completed command ${exitCode}` : `saving shell interaction ${interaction}`);
-    this._onIntegratedShellChange.fire(change);
+    this._logService.debug('interaction', exitCode ? `completed command ${exitCode}` : `saving shell interaction ${type}`);
+    this._onIntegratedShellChange.fire({ type, value });
     return true;
   }
 
@@ -3289,14 +3293,16 @@ export class InputHandler extends Disposable implements IInputHandler {
   }
 }
 
-const enum ShellIntegrationInteraction {
+enum ShellIntegrationInteraction {
   PROMPT_START = 'PROMPT_START',
   COMMAND_START = 'COMMAND_START',
   COMMAND_EXECUTED = 'COMMAND_EXECUTED',
   COMMAND_FINISHED = 'COMMAND_FINISHED'
 }
 
-const enum ShellIntegrationInfo {
+enum ShellIntegrationInfo {
   REMOTE_HOST = 'RemoteHost',
   CURRENT_DIR = 'CurrentDir',
 }
+
+export interface IShellChangeEvent { type: ShellIntegrationInfo | ShellIntegrationInteraction, value: string }

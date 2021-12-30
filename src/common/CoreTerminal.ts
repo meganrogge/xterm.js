@@ -37,7 +37,7 @@ import { CharsetService } from 'common/services/CharsetService';
 import { updateWindowsModeWrappedState } from 'common/WindowsMode';
 import { IFunctionIdentifier, IParams } from 'common/parser/Types';
 import { IBufferSet } from 'common/buffer/Types';
-import { InputHandler } from 'common/InputHandler';
+import { InputHandler, IShellChangeEvent } from 'common/InputHandler';
 import { WriteBuffer } from 'common/input/WriteBuffer';
 
 // Only trigger this warning a single time per session
@@ -68,6 +68,8 @@ export abstract class CoreTerminal extends Disposable implements ICoreTerminal {
   private _onResize = new EventEmitter<{ cols: number, rows: number }>();
   public get onResize(): IEvent<{ cols: number, rows: number }> { return this._onResize.event; }
   protected _onScroll = new EventEmitter<IScrollEvent, void>();
+  protected _onIntegratedShellChange = new EventEmitter<IShellChangeEvent>();
+  public get onIntegratedShellChange(): IEvent<IShellChangeEvent> { return this._onIntegratedShellChange.event; }
   /**
    * Internally we track the source of the scroll but this is meaningless outside the library so
    * it's filtered out.
@@ -134,6 +136,9 @@ export abstract class CoreTerminal extends Disposable implements ICoreTerminal {
     this.register(this._inputHandler.onScroll(event => {
       this._onScroll.fire({ position: this._bufferService.buffer.ydisp, source: ScrollSource.TERMINAL });
       this._dirtyRowService.markRangeDirty(this._bufferService.buffer.scrollTop, this._bufferService.buffer.scrollBottom);
+    }));
+    this.register(this._inputHandler.onIntegratedShellChange(event => {
+      this._onIntegratedShellChange.fire(event);
     }));
 
     // Setup WriteBuffer

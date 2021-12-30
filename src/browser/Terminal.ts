@@ -169,6 +169,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this.register(forwardEvent(this._inputHandler.onTitleChange, this._onTitleChange));
     this.register(forwardEvent(this._inputHandler.onA11yChar, this._onA11yCharEmitter));
     this.register(forwardEvent(this._inputHandler.onA11yTab, this._onA11yTabEmitter));
+    this.register(forwardEvent(this._inputHandler.onIntegratedShellChange, this._onIntegratedShellChange));
 
     // Setup listeners
     this.register(this._bufferService.onResize(e => this._afterResize(e.cols, e.rows)));

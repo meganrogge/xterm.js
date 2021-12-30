@@ -7,6 +7,7 @@
  * to be stable and consumed by external programs.
  */
 
+
 /// <reference lib="dom"/>
 
 declare module 'xterm' {
@@ -738,6 +739,8 @@ declare module 'xterm' {
      */
     onScroll: IEvent<number>;
 
+
+    onIntegratedShellChange: IEvent<{ type: string, value: string }>;
     /**
      * Adds an event listener for when a selection change occurs.
      * @returns an `IDisposable` to stop listening.

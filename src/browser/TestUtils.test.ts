@@ -36,6 +36,7 @@ export class MockTerminal implements ITerminal {
   public onSelectionChange!: IEvent<void>;
   public onData!: IEvent<string>;
   public onBinary!: IEvent<string>;
+  public onIntegratedShellChange!: IEvent<{ type: string, value: string }>;
   public onTitleChange!: IEvent<string>;
   public onBell!: IEvent<void>;
   public onScroll!: IEvent<number>;
@@ -340,13 +341,13 @@ export class MockCharSizeService implements ICharSizeService {
   public serviceBrand: undefined;
   public get hasValidSize(): boolean { return this.width > 0 && this.height > 0; }
   public onCharSizeChange: IEvent<void> = new EventEmitter<void>().event;
-  constructor(public width: number, public height: number) {}
-  public measure(): void {}
+  constructor(public width: number, public height: number) { }
+  public measure(): void { }
 }
 
 export class MockMouseService implements IMouseService {
   public serviceBrand: undefined;
-  public getCoords(event: {clientX: number, clientY: number}, element: HTMLElement, colCount: number, rowCount: number, isSelection?: boolean): [number, number] | undefined {
+  public getCoords(event: { clientX: number, clientY: number }, element: HTMLElement, colCount: number, rowCount: number, isSelection?: boolean): [number, number] | undefined {
     throw new Error('Not implemented');
   }
 
@@ -359,7 +360,7 @@ export class MockRenderService implements IRenderService {
   public serviceBrand: undefined;
   public onDimensionsChange: IEvent<IRenderDimensions> = new EventEmitter<IRenderDimensions>().event;
   public onRenderedBufferChange: IEvent<{ start: number, end: number }, void> = new EventEmitter<{ start: number, end: number }>().event;
-  public onRefreshRequest: IEvent<{ start: number, end: number}, void> = new EventEmitter<{ start: number, end: number }>().event;
+  public onRefreshRequest: IEvent<{ start: number, end: number }, void> = new EventEmitter<{ start: number, end: number }>().event;
   public dimensions: IRenderDimensions = {
     scaledCharWidth: 0,
     scaledCharHeight: 0,

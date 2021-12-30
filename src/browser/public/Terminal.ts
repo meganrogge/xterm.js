@@ -68,6 +68,7 @@ export class Terminal implements ITerminalApi {
   public get onRender(): IEvent<{ start: number, end: number }> { return this._core.onRender; }
   public get onResize(): IEvent<{ cols: number, rows: number }> { return this._core.onResize; }
   public get onScroll(): IEvent<number> { return this._core.onScroll; }
+  public get onIntegratedShellChange(): IEvent<{ type: string, value: string }> { return this._core.onIntegratedShellChange; }
   public get onSelectionChange(): IEvent<void> { return this._core.onSelectionChange; }
   public get onTitleChange(): IEvent<string> { return this._core.onTitleChange; }
 
