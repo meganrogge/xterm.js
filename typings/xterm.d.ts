@@ -739,7 +739,10 @@ declare module 'xterm' {
      */
     onScroll: IEvent<number>;
 
-
+    /**
+     * Adds an event listener for when shell integration
+     * detects a change
+     */
     onIntegratedShellChange: IEvent<{ type: string, value: string }>;
     /**
      * Adds an event listener for when a selection change occurs.
