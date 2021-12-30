@@ -3029,9 +3029,6 @@ export class InputHandler extends Disposable implements IInputHandler {
   public saveShellInfo(data: string): boolean {
     let info: string | undefined;
     const [type, value] = data.split('=');
-    this._logService.debug('type', type);
-    this._logService.debug('value', value);
-    this._logService.debug(ShellIntegrationInfo.CURRENT_DIR);
     switch (type) {
       case ShellIntegrationInfo.CURRENT_DIR:
         info = value;
@@ -3043,7 +3040,7 @@ export class InputHandler extends Disposable implements IInputHandler {
     if (!info) {
       return false;
     }
-    this._logService.debug('info', info);
+    this._logService.debug('saving shell info', info);
     this._onIntegratedShellChange.fire(info);
     return true;
   }
@@ -3074,7 +3071,7 @@ export class InputHandler extends Disposable implements IInputHandler {
     if (!change) {
       return false;
     }
-    this._logService.debug('interaction', exitCode ? `completed command ${exitCode}` : interaction);
+    this._logService.debug('interaction', exitCode ? `completed command ${exitCode}` : `saving shell interaction ${interaction}`);
     this._onIntegratedShellChange.fire(change);
     return true;
   }
@@ -3300,6 +3297,6 @@ const enum ShellIntegrationInteraction {
 }
 
 const enum ShellIntegrationInfo {
-  REMOTE_HOST = 'RemoteHost=',
-  CURRENT_DIR = 'CurrentDir=',
+  REMOTE_HOST = 'RemoteHost',
+  CURRENT_DIR = 'CurrentDir',
 }
