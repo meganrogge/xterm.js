@@ -3042,7 +3042,6 @@ export class InputHandler extends Disposable implements IInputHandler {
     if (!value) {
       return false;
     }
-    this._logService.debug('saving shell info', value);
     this._onIntegratedShellChange.fire({ type, value });
     return true;
   }
@@ -3075,7 +3074,6 @@ export class InputHandler extends Disposable implements IInputHandler {
     if (!value) {
       return false;
     }
-    this._logService.debug('interaction', exitCode ? `completed command ${exitCode}` : `saving shell interaction ${type}`);
     this._onIntegratedShellChange.fire({ type, value });
     return true;
   }
