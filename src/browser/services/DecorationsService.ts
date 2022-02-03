@@ -129,9 +129,8 @@ class BufferDecoration extends Disposable implements IDecoration {
     this._element.style.width = `${this._decorationOptions.width}px`;
     this._element.style.height = `${this._decorationOptions.height}px`;
     this._element.style.top = `${this._marker.line * this._renderService.dimensions.scaledCellHeight}px`;
-    if (this._decorationOptions.x && this._decorationOptions.x < 0) {
-      throw new Error(`Cannot create a decoration with a negative x offset: ${this._decorationOptions.x}`);
-    }
+
+    //TODO: throw if x is negative?
     if (this._decorationOptions.anchor === 'right') {
       this._element.style.right = this._decorationOptions.x ? `${this._decorationOptions.x * this._renderService.dimensions.scaledCellWidth}px` : '';
     } else {
