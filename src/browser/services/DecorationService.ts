@@ -122,7 +122,7 @@ export class Decoration extends Disposable implements IDecoration {
     this._element.style.height = `${this.height * renderService.dimensions.actualCellHeight}px`;
     if (this.inScrollbar) {
       this._element.classList.add('xterm-decoration-scrollbar');
-      this._element.style.top = `${(this.marker.line / this._bufferService.rows) * renderService.dimensions.actualCellHeight}px`;
+      this._element.style.top = `${(this.marker.line / this._bufferService.rows) * this._container.parentElement!.clientHeight}px`;
     } else {
       this._element.style.top = `${(this.marker.line - this._bufferService.buffers.active.ydisp) * renderService.dimensions.actualCellHeight}px`;
     }
@@ -156,6 +156,11 @@ export class Decoration extends Disposable implements IDecoration {
 
   private _refreshStyle(renderService: IRenderService): void {
     if (!this._element) {
+      return;
+    }
+    if (this.inScrollbar) {
+      this._element.style.top = `${(this.marker.line / this._bufferService.buffer.lines.length) * this._container.parentElement!.parentElement!.clientHeight}px`;
+      this._element.style.display = this._bufferService.buffer === this._bufferService.buffers.alt ? 'none' : 'block';
       return;
     }
     const line = this.marker.line - this._bufferService.buffers.active.ydisp;
