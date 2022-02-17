@@ -5,7 +5,7 @@
 
 import { IEvent } from 'common/EventEmitter';
 import { IRenderDimensions, IRenderer } from 'browser/renderer/Types';
-import { IColorSet } from 'browser/Types';
+import { IColorSet, IViewport } from 'browser/Types';
 import { ISelectionRedrawRequestEvent as ISelectionRequestRedrawEvent, ISelectionRequestScrollLinesEvent } from 'browser/selection/Types';
 import { createDecorator } from 'common/services/ServiceRegistry';
 import { IDisposable } from 'common/Types';
@@ -121,5 +121,5 @@ export const IDecorationService = createDecorator<IDecorationService>('Decoratio
 export interface IDecorationService extends IDisposable {
   registerDecoration(decorationOptions: IDecorationOptions): IDecoration | undefined;
   refresh(): void;
-  attachToDom(screenElement: HTMLElement, renderService: IRenderService, bufferService: IBufferService): void;
+  attachToDom(screenElement: HTMLElement, renderService: IRenderService, viewport: IViewport): void;
 }

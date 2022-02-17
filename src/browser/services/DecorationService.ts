@@ -4,6 +4,7 @@
  */
 
 import { IDecorationService, IRenderService } from 'browser/services/Services';
+import { IViewport } from 'browser/Types';
 import { EventEmitter, IEvent } from 'common/EventEmitter';
 import { Disposable } from 'common/Lifecycle';
 import { IBufferService, IInstantiationService } from 'common/services/Services';
@@ -18,7 +19,7 @@ export class DecorationService extends Disposable implements IDecorationService 
 
   constructor(@IInstantiationService private readonly _instantiationService: IInstantiationService) { super(); }
 
-  public attachToDom(screenElement: HTMLElement, renderService: IRenderService): void {
+  public attachToDom(screenElement: HTMLElement, renderService: IRenderService, viewport: IViewport): void {
     this._renderService = renderService;
     this._screenElement = screenElement;
     this._container = document.createElement('div');
@@ -75,6 +76,7 @@ export class Decoration extends Disposable implements IDecoration {
   public anchor: 'left' | 'right';
   public width: number;
   public height: number;
+  public inScrollbar: boolean;
 
   constructor(
     options: IDecorationOptions,
@@ -88,6 +90,7 @@ export class Decoration extends Disposable implements IDecoration {
     this.anchor = options.anchor || 'left';
     this.width = options.width || 1;
     this.height = options.height || 1;
+    this.inScrollbar = options.inScrollbar || false;
   }
 
   public render(renderService: IRenderService, shouldRecreate?: boolean): void {
@@ -95,7 +98,11 @@ export class Decoration extends Disposable implements IDecoration {
       this._createElement(renderService, shouldRecreate);
     }
     if (this._container && this._element && !this._container.contains(this._element)) {
-      this._container.append(this._element);
+      if (this._container.parentElement?.parentElement && this.inScrollbar) {
+        this._container.parentElement.parentElement.appendChild(this._element);
+      } else {
+        this._container.append(this._element);
+      }
     }
     this._refreshStyle(renderService);
     if (this._element) {
@@ -108,17 +115,23 @@ export class Decoration extends Disposable implements IDecoration {
       this._container.removeChild(this._element);
     }
     this._element = document.createElement('div');
-    this._element.classList.add('xterm-decoration');
+    if (!this.inScrollbar) {
+      this._element.classList.add('xterm-decoration');
+    }
     this._element.style.width = `${this.width * renderService.dimensions.actualCellWidth}px`;
     this._element.style.height = `${this.height * renderService.dimensions.actualCellHeight}px`;
-    this._element.style.top = `${(this.marker.line - this._bufferService.buffers.active.ydisp) * renderService.dimensions.actualCellHeight}px`;
-
+    if (this.inScrollbar) {
+      this._element.classList.add('xterm-decoration-scrollbar');
+      this._element.style.top = `${(this.marker.line / this._bufferService.rows) * renderService.dimensions.actualCellHeight}px`;
+    } else {
+      this._element.style.top = `${(this.marker.line - this._bufferService.buffers.active.ydisp) * renderService.dimensions.actualCellHeight}px`;
+    }
     if (this.x && this.x > this._bufferService.cols) {
       // exceeded the container width, so hide
       this._element.style.display = 'none';
     }
-    if (this.anchor === 'right') {
-      this._element.style.right = this.x ? `${this.x * renderService.dimensions.actualCellWidth}px` : '';
+    if (this.anchor === 'right' || this.inScrollbar) {
+      this._element.style.left = `${((this._bufferService.cols - 1 - this.x) * renderService.dimensions.actualCellWidth)+10}px`;
     } else {
       this._element.style.left = this.x ? `${this.x * renderService.dimensions.actualCellWidth}px` : '';
     }

@@ -150,6 +150,7 @@ if (document.location.pathname === '/test') {
   document.getElementById('custom-glyph').addEventListener('click', writeCustomGlyphHandler);
   document.getElementById('load-test').addEventListener('click', loadTest);
   document.getElementById('add-decoration').addEventListener('click', addDecoration);
+  document.getElementById('add-scrollbar-decoration').addEventListener('click', addScrollbarDecoration);
 }
 
 function createTerminal(): void {
@@ -533,5 +534,14 @@ function addDecoration() {
   term.write('');
   decoration.onRender(() => {
     decoration.element.style.backgroundColor = 'red';
+  });
+}
+
+function addScrollbarDecoration() {
+  const marker = term.addMarker(1);
+  const decoration = term.registerDecoration({ marker, inScrollbar: true });
+  term.write('');
+  decoration.onRender(() => {
+    decoration.element.style.backgroundColor = 'blue';
   });
 }

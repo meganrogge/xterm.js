@@ -470,6 +470,8 @@ declare module 'xterm' {
      * cell height
      */
     height?: number;
+
+    inScrollbar?: boolean;
   }
 
   /**
