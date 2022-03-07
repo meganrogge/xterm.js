@@ -70,6 +70,9 @@ export class Terminal extends CoreTerminal implements ITerminal {
   private _viewportElement: HTMLElement | undefined;
   private _helperContainer: HTMLElement | undefined;
   private _compositionView: HTMLElement | undefined;
+  private _scrollbarDecorationCanvas: HTMLCanvasElement | undefined;
+
+  private _scrollbarDecorations: Map<number, { marker: IMarker, color?: string}> = new Map();
 
   // private _visualBellTimer: number;
 
@@ -480,6 +483,10 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this._viewportScrollArea = document.createElement('div');
     this._viewportScrollArea.classList.add('xterm-scroll-area');
     this._viewportElement.appendChild(this._viewportScrollArea);
+
+    this._scrollbarDecorationCanvas = document.createElement('canvas');
+    this._scrollbarDecorationCanvas.classList.add('xterm-decoration-scrollbar');
+    this._viewportElement?.appendChild(this._scrollbarDecorationCanvas);
 
     this.screenElement = document.createElement('div');
     this.screenElement.classList.add('xterm-screen');
@@ -892,7 +899,37 @@ export class Terminal extends CoreTerminal implements ITerminal {
    * @param end The row to end at (between start and this.rows - 1).
    */
   public refresh(start: number, end: number): void {
+    this._refreshScollbarDecorations();
     this._renderService?.refreshRows(start, end);
+  }
+
+  private _refreshScollbarDecorations(): void {
+    if (!this._scrollbarDecorations) {
+      return;
+    }
+    const ctx = this._scrollbarDecorationCanvas?.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+    ctx.canvas.style.top = `${this._bufferService.buffer.ydisp * this._renderService?.dimensions.actualCellHeight!}`;
+  }
+
+  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
+    this._scrollbarDecorations.set(marker.id, { marker, color });
+    this._addScrollbarDecoration(marker, color);
+  }
+
+  private _addScrollbarDecoration(marker: IMarker, color?: string): void {
+    const ctx = this._scrollbarDecorationCanvas?.getContext('2d');
+    const adjustedY = (marker.line / this._bufferService.rows) * ctx!.canvas.height;
+    if (ctx) {
+      ctx.lineWidth = 1;
+      if (color) {
+        ctx.strokeStyle = color;
+      }
+      ctx.strokeRect(0, adjustedY, 10, 1);
+      ctx.stroke();
+    }
   }
 
   /**
