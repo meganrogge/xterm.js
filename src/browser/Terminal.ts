@@ -591,6 +591,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this.register(this.onScroll(() => this._mouseZoneManager!.clearAll()));
     this.linkifier.attachToDom(this.element, this._mouseZoneManager);
     this.linkifier2.attachToDom(this.screenElement, this._mouseService, this._renderService);
+    this.register(addDisposableDomListener(window, 'resize', () => this._refreshScollbarDecorations()));
 
     this.decorationService.attachToDom(this.screenElement, this._renderService, this._bufferService);
     // This event listener must be registered aftre MouseZoneManager is created
@@ -901,12 +902,6 @@ export class Terminal extends CoreTerminal implements ITerminal {
    * @param end The row to end at (between start and this.rows - 1).
    */
   public refresh(start: number, end: number): void {
-    if (this._scrollbarDecorationNode) {
-      this._scrollbarDecorationNode.style.width = '7px';
-      this._scrollbarDecorationNode.style.height = `${this._viewportElement!.clientHeight}px`;
-      this._scrollbarDecorationNode.width = Math.floor(7*window.devicePixelRatio);
-      this._scrollbarDecorationNode.height = Math.floor(436*window.devicePixelRatio);
-    }
     this._refreshScollbarDecorations();
     this._renderService?.refreshRows(start, end);
   }
@@ -922,6 +917,12 @@ export class Terminal extends CoreTerminal implements ITerminal {
   private _refreshScollbarDecorations(): void {
     if (!this._scrollbarDecorationCanvas) {
       return;
+    }
+    if (this._scrollbarDecorationNode) {
+      this._scrollbarDecorationNode.style.width = '7px';
+      this._scrollbarDecorationNode.style.height = `${this._viewportElement!.clientHeight}px`;
+      this._scrollbarDecorationNode.width = Math.floor(7*window.devicePixelRatio);
+      this._scrollbarDecorationNode.height = Math.floor(436*window.devicePixelRatio);
     }
     this._scrollbarDecorationCanvas.clearRect(0, 0, this._scrollbarDecorationCanvas.canvas.width, this._scrollbarDecorationCanvas.canvas.height);
     for (const scrollbarDecoration of this._scrollbarDecorations) {
