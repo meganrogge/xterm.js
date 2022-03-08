@@ -71,6 +71,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
   private _helperContainer: HTMLElement | undefined;
   private _compositionView: HTMLElement | undefined;
   private _scrollbarDecorationCanvas: CanvasRenderingContext2D | null = null;
+  private _scrollbarDecorationNode: HTMLCanvasElement | undefined;
 
   private _scrollbarDecorations:  { marker: IMarker, color?: string}[] = [];
 
@@ -484,10 +485,10 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this._viewportScrollArea.classList.add('xterm-scroll-area');
     this._viewportElement.appendChild(this._viewportScrollArea);
 
-    const scrollbarDecorationCanvas = document.createElement('canvas');
-    scrollbarDecorationCanvas.classList.add('xterm-decoration-scrollbar');
-    this._viewportElement?.appendChild(scrollbarDecorationCanvas);
-    this._scrollbarDecorationCanvas = scrollbarDecorationCanvas.getContext('2d');
+    this._scrollbarDecorationNode = document.createElement('canvas');
+    this._scrollbarDecorationNode.classList.add('xterm-decoration-scrollbar');
+    this._viewportElement?.appendChild(this._scrollbarDecorationNode);
+    this._scrollbarDecorationCanvas = this._scrollbarDecorationNode.getContext('2d');
 
     this.screenElement = document.createElement('div');
     this.screenElement.classList.add('xterm-screen');
@@ -900,11 +901,17 @@ export class Terminal extends CoreTerminal implements ITerminal {
    * @param end The row to end at (between start and this.rows - 1).
    */
   public refresh(start: number, end: number): void {
+    if (this._scrollbarDecorationNode) {
+      this._scrollbarDecorationNode.style.width = '10px';
+      this._scrollbarDecorationNode.style.height = `${this._viewportElement!.clientHeight}px`;
+      this._scrollbarDecorationNode.width = Math.floor(10*window.devicePixelRatio);
+      this._scrollbarDecorationNode.height = Math.floor(436*window.devicePixelRatio);
+    }
     this._refreshScollbarDecorations();
     this._renderService?.refreshRows(start, end);
   }
 
-  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
+  public registerScrollbarDecoration(marker: IMarker, color?: string): HTMLCanvasElement | undefined {
     this._scrollbarDecorations.push({ marker, color });
     if (!this._scrollbarDecorationCanvas) {
       return;
@@ -917,7 +924,6 @@ export class Terminal extends CoreTerminal implements ITerminal {
       return;
     }
     this._scrollbarDecorationCanvas.clearRect(0, 0, this._scrollbarDecorationCanvas.canvas.width, this._scrollbarDecorationCanvas.canvas.height);
-
     for (const scrollbarDecoration of this._scrollbarDecorations) {
       this._addScrollbarDecoration(scrollbarDecoration.marker, scrollbarDecoration.color);
     }
@@ -931,7 +937,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
     if (color) {
       this._scrollbarDecorationCanvas.strokeStyle = color;
     }
-    this._scrollbarDecorationCanvas.strokeRect(0,  (marker.line / (this._bufferService.buffers.active.lines.length) * this._viewportElement.clientHeight), window.devicePixelRatio * 10, window.devicePixelRatio);
+    this._scrollbarDecorationCanvas.strokeRect(0,  (marker.line / (this._bufferService.buffers.active.lines.length) * Math.floor(436*window.devicePixelRatio)), Math.floor(10*window.devicePixelRatio), window.devicePixelRatio);
   }
 
   /**

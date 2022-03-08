@@ -176,7 +176,7 @@ export class Terminal implements ITerminalApi {
     this._verifyPositiveIntegers(decorationOptions.x ?? 0, decorationOptions.width ?? 0, decorationOptions.height ?? 0);
     return this._core.registerDecoration(decorationOptions);
   }
-  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
+  public registerScrollbarDecoration(marker: IMarker, color?: string): HTMLCanvasElement | undefined {
     this._checkProposedApi();
     return this._core.registerScrollbarDecoration(marker, color);
   }

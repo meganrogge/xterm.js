@@ -105,7 +105,7 @@ export class MockTerminal implements ITerminal {
   public registerDecoration(decorationOptions: IDecorationOptions): IDecoration | undefined {
     throw new Error('Method not implemented.');
   }
-  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
+  public registerScrollbarDecoration(marker: IMarker, color?: string): HTMLCanvasElement | undefined {
     throw new Error('Method not implemented.');
   }
   public hasSelection(): boolean {
