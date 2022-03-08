@@ -911,7 +911,10 @@ export class Terminal extends CoreTerminal implements ITerminal {
     if (!ctx) {
       return;
     }
-    ctx.canvas.style.top = `${this._bufferService.buffer.ydisp * this._renderService?.dimensions.actualCellHeight!}`;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this._scrollbarDecorations.forEach(e => {
+      this._addScrollbarDecoration(e.marker, e.color);
+    });
   }
 
   public registerScrollbarDecoration(marker: IMarker, color?: string): void {
@@ -921,7 +924,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
 
   private _addScrollbarDecoration(marker: IMarker, color?: string): void {
     const ctx = this._scrollbarDecorationCanvas?.getContext('2d');
-    const adjustedY = (marker.line / this._bufferService.rows) * ctx!.canvas.height;
+    const adjustedY = (marker.line / this._bufferService.buffer.y) * ctx!.canvas.height;
     if (ctx) {
       ctx.lineWidth = 1;
       if (color) {
