@@ -184,4 +184,11 @@
     position: fixed;
     top: 0px;
     right: 0px;
+    width: 50px;
 } 
+
+.xterm-decoration-scrollbar.demo-scrollbar {
+  height: 436px;
+  left: 785px;
+  top: 83px;
+}

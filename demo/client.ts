@@ -553,6 +553,7 @@ function addDecoration() {
 }
 
 function addScrollbarDecoration() {
+  document.querySelector('.xterm-decoration-scrollbar').classList.add('demo-scrollbar');
   term.registerScrollbarDecoration(term.addMarker(1), 'red');
   term.registerScrollbarDecoration(term.addMarker(3), 'red');
   term.registerScrollbarDecoration(term.addMarker(5), 'red');

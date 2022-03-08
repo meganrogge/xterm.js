@@ -904,6 +904,10 @@ export class Terminal extends CoreTerminal implements ITerminal {
   }
 
   private _refreshScollbarDecorations(): void {
+    if (!this._scrollbarDecorationCanvas || !this._viewportElement?.parentElement) {
+      return;
+    }
+
     if (!this._scrollbarDecorations) {
       return;
     }
@@ -924,15 +928,15 @@ export class Terminal extends CoreTerminal implements ITerminal {
 
   private _addScrollbarDecoration(marker: IMarker, color?: string): void {
     const ctx = this._scrollbarDecorationCanvas?.getContext('2d');
-    const adjustedY = (marker.line / this._bufferService.buffer.y) * ctx!.canvas.height;
-    if (ctx) {
-      ctx.lineWidth = 1;
-      if (color) {
-        ctx.strokeStyle = color;
-      }
-      ctx.strokeRect(0, adjustedY, 10, 1);
-      ctx.stroke();
+    if (!ctx || !this._viewportElement?.clientHeight) {
+      return;
     }
+    const y = (marker.line / (this._bufferService.buffer.ybase + this.rows) * this._viewportElement.clientHeight);
+    ctx.lineWidth = 1;
+    if (color) {
+      ctx.strokeStyle = color;
+    }
+    ctx.strokeRect(0, y, 30, 10);
   }
 
   /**
