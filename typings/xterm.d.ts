@@ -948,9 +948,9 @@ declare module 'xterm' {
 
     /**
      * (EXPERIMENTAL) Adds a decoration to the scrollbar for the given line @param y
-     * with a stroke @param color
+     * with a @param color
      */
-    registerScrollbarDecoration(marker: IMarker, color?: string): void;
+    registerScrollbarDecoration(y: number, color?: string): void;
 
     /**
      * Gets whether the terminal has an active selection.

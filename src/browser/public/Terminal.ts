@@ -176,9 +176,10 @@ export class Terminal implements ITerminalApi {
     this._verifyPositiveIntegers(decorationOptions.x ?? 0, decorationOptions.width ?? 0, decorationOptions.height ?? 0);
     return this._core.registerDecoration(decorationOptions);
   }
-  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
+  public registerScrollbarDecoration(y: number, color?: string): void {
     this._checkProposedApi();
-    return this._core.registerScrollbarDecoration(marker, color);
+    this._verifyPositiveIntegers(y);
+    return this._core.registerScrollbarDecoration(y, color);
   }
   public addMarker(cursorYOffset: number): IMarker | undefined {
     return this.registerMarker(cursorYOffset);

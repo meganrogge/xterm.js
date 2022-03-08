@@ -62,7 +62,7 @@ export interface IPublicTerminal extends IDisposable {
   deregisterCharacterJoiner(joinerId: number): void;
   addMarker(cursorYOffset: number): IMarker | undefined;
   registerDecoration(decorationOptions: IDecorationOptions): IDecoration | undefined;
-  registerScrollbarDecoration(marker: IMarker, color?: string): void;
+  registerScrollbarDecoration(y: number, color?: string): void;
   hasSelection(): boolean;
   getSelection(): string;
   getSelectionPosition(): ISelectionPosition | undefined;

@@ -70,9 +70,9 @@ export class Terminal extends CoreTerminal implements ITerminal {
   private _viewportElement: HTMLElement | undefined;
   private _helperContainer: HTMLElement | undefined;
   private _compositionView: HTMLElement | undefined;
-  private _scrollbarDecorationCanvas: HTMLCanvasElement | undefined;
+  private _scrollbarDecorationCanvas: CanvasRenderingContext2D | null = null;
 
-  private _scrollbarDecorations: Map<number, { marker: IMarker, color?: string}> = new Map();
+  private _scrollbarDecorations:  { y: number, color?: string}[] = [];
 
   // private _visualBellTimer: number;
 
@@ -484,9 +484,10 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this._viewportScrollArea.classList.add('xterm-scroll-area');
     this._viewportElement.appendChild(this._viewportScrollArea);
 
-    this._scrollbarDecorationCanvas = document.createElement('canvas');
-    this._scrollbarDecorationCanvas.classList.add('xterm-decoration-scrollbar');
-    this._viewportElement?.appendChild(this._scrollbarDecorationCanvas);
+    const scrollbarDecorationCanvas = document.createElement('canvas');
+    scrollbarDecorationCanvas.classList.add('xterm-decoration-scrollbar');
+    this._viewportElement?.appendChild(scrollbarDecorationCanvas);
+    this._scrollbarDecorationCanvas = scrollbarDecorationCanvas.getContext('2d');
 
     this.screenElement = document.createElement('div');
     this.screenElement.classList.add('xterm-screen');
@@ -903,40 +904,34 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this._renderService?.refreshRows(start, end);
   }
 
+  public registerScrollbarDecoration(y: number, color?: string): void {
+    this._scrollbarDecorations.push({ y, color });
+    if (!this._scrollbarDecorationCanvas) {
+      return;
+    }
+    this._addScrollbarDecoration(y, color);
+  }
+
   private _refreshScollbarDecorations(): void {
-    if (!this._scrollbarDecorationCanvas || !this._viewportElement?.parentElement) {
+    if (!this._scrollbarDecorationCanvas) {
       return;
     }
+    this._scrollbarDecorationCanvas.clearRect(0, 0, this._scrollbarDecorationCanvas.canvas.width, this._scrollbarDecorationCanvas.canvas.height);
 
-    if (!this._scrollbarDecorations) {
-      return;
+    for (const scrollbarDecoration of this._scrollbarDecorations) {
+      this._addScrollbarDecoration(scrollbarDecoration.y, scrollbarDecoration.color);
     }
-    const ctx = this._scrollbarDecorationCanvas?.getContext('2d');
-    if (!ctx) {
-      return;
-    }
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    this._scrollbarDecorations.forEach(e => {
-      this._addScrollbarDecoration(e.marker, e.color);
-    });
   }
 
-  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
-    this._scrollbarDecorations.set(marker.id, { marker, color });
-    this._addScrollbarDecoration(marker, color);
-  }
-
-  private _addScrollbarDecoration(marker: IMarker, color?: string): void {
-    const ctx = this._scrollbarDecorationCanvas?.getContext('2d');
-    if (!ctx || !this._viewportElement?.clientHeight) {
+  private _addScrollbarDecoration(y: number, color?: string): void {
+    if (!this._scrollbarDecorationCanvas || !this._viewportElement?.clientHeight) {
       return;
     }
-    const y = (marker.line / (this._bufferService.buffer.ybase + this.rows) * this._viewportElement.clientHeight);
-    ctx.lineWidth = 1;
+    this._scrollbarDecorationCanvas.lineWidth = 1;
     if (color) {
-      ctx.strokeStyle = color;
+      this._scrollbarDecorationCanvas.strokeStyle = color;
     }
-    ctx.strokeRect(0, y, 30, 10);
+    this._scrollbarDecorationCanvas.strokeRect(0,  (y / (this._bufferService.buffer.ybase + this.rows) * this._viewportElement.clientHeight), window.devicePixelRatio * 10, window.devicePixelRatio);
   }
 
   /**
