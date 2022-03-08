@@ -72,7 +72,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
   private _compositionView: HTMLElement | undefined;
   private _scrollbarDecorationCanvas: CanvasRenderingContext2D | null = null;
 
-  private _scrollbarDecorations:  { y: number, color?: string}[] = [];
+  private _scrollbarDecorations:  { marker: IMarker, color?: string}[] = [];
 
   // private _visualBellTimer: number;
 
@@ -904,12 +904,12 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this._renderService?.refreshRows(start, end);
   }
 
-  public registerScrollbarDecoration(y: number, color?: string): void {
-    this._scrollbarDecorations.push({ y, color });
+  public registerScrollbarDecoration(marker: IMarker, color?: string): void {
+    this._scrollbarDecorations.push({ marker, color });
     if (!this._scrollbarDecorationCanvas) {
       return;
     }
-    this._addScrollbarDecoration(y, color);
+    this._addScrollbarDecoration(marker, color);
   }
 
   private _refreshScollbarDecorations(): void {
@@ -919,11 +919,11 @@ export class Terminal extends CoreTerminal implements ITerminal {
     this._scrollbarDecorationCanvas.clearRect(0, 0, this._scrollbarDecorationCanvas.canvas.width, this._scrollbarDecorationCanvas.canvas.height);
 
     for (const scrollbarDecoration of this._scrollbarDecorations) {
-      this._addScrollbarDecoration(scrollbarDecoration.y, scrollbarDecoration.color);
+      this._addScrollbarDecoration(scrollbarDecoration.marker, scrollbarDecoration.color);
     }
   }
 
-  private _addScrollbarDecoration(y: number, color?: string): void {
+  private _addScrollbarDecoration(marker: IMarker, color?: string): void {
     if (!this._scrollbarDecorationCanvas || !this._viewportElement?.clientHeight) {
       return;
     }
@@ -931,7 +931,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
     if (color) {
       this._scrollbarDecorationCanvas.strokeStyle = color;
     }
-    this._scrollbarDecorationCanvas.strokeRect(0,  (y / (this._bufferService.buffer.ybase + this.rows) * this._viewportElement.clientHeight), window.devicePixelRatio * 10, window.devicePixelRatio);
+    this._scrollbarDecorationCanvas.strokeRect(0,  (marker.line / (this._bufferService.buffers.active.lines.length) * this._viewportElement.clientHeight), window.devicePixelRatio * 10, window.devicePixelRatio);
   }
 
   /**
