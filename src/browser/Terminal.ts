@@ -902,9 +902,9 @@ export class Terminal extends CoreTerminal implements ITerminal {
    */
   public refresh(start: number, end: number): void {
     if (this._scrollbarDecorationNode) {
-      this._scrollbarDecorationNode.style.width = '10px';
+      this._scrollbarDecorationNode.style.width = '7px';
       this._scrollbarDecorationNode.style.height = `${this._viewportElement!.clientHeight}px`;
-      this._scrollbarDecorationNode.width = Math.floor(10*window.devicePixelRatio);
+      this._scrollbarDecorationNode.width = Math.floor(7*window.devicePixelRatio);
       this._scrollbarDecorationNode.height = Math.floor(436*window.devicePixelRatio);
     }
     this._refreshScollbarDecorations();
@@ -937,7 +937,7 @@ export class Terminal extends CoreTerminal implements ITerminal {
     if (color) {
       this._scrollbarDecorationCanvas.strokeStyle = color;
     }
-    this._scrollbarDecorationCanvas.strokeRect(0,  (marker.line / (this._bufferService.buffers.active.lines.length) * Math.floor(436*window.devicePixelRatio)), Math.floor(10*window.devicePixelRatio), window.devicePixelRatio);
+    this._scrollbarDecorationCanvas.strokeRect(0,  (marker.line / (this._bufferService.buffers.active.lines.length) * Math.floor(436*window.devicePixelRatio)), Math.floor(7*window.devicePixelRatio), window.devicePixelRatio);
   }
 
   /**
