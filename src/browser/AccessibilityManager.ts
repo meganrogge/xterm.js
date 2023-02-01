@@ -333,13 +333,27 @@ export class AccessibilityManager extends Disposable {
       return;
     }
     this._accessibilityBufferActive = true;
-    const { bufferElements } = this._terminal.viewport.getBufferElements(0);
-    for (const element of bufferElements) {
-      if (element.textContent) {
-        element.textContent = element.textContent.replace(new RegExp(' ', 'g'), '\xA0');
+    // const { bufferElements } = this._terminal.viewport.getBufferElements(0);
+    // for (const element of bufferElements) {
+    //   if (element.textContent) {
+    //     element.textContent = element.textContent.replace(new RegExp(' ', 'g'), '\xA0');
+    //   }
+    // }
+    const bufferElements = [];
+    for (let i = 0; i < 5; i++) {
+      const heading = document.createElement('h2');
+      heading.textContent = `command ${i+1}`;
+      const output = document.createElement('p');
+      output.textContent = `output ${i+1}`;
+      heading.appendChild(output);
+      bufferElements.push(heading);
+      if (i === 4) {
+        heading.tabIndex = 0;
+        heading.focus();
       }
     }
     this._accessiblityBuffer.replaceChildren(...bufferElements);
+
     this._accessiblityBuffer.scrollTop = this._accessiblityBuffer.scrollHeight;
   }
 
