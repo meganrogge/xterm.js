@@ -72,17 +72,18 @@ export class AccessibleBuffer extends Disposable {
       return;
     }
     this._isAccessibleBufferActive = true;
-    this._element.scrollTop = this._element.scrollHeight;
-    // const bufferElements = this._provider?.provideBufferElements();
-    // if (!bufferElements) {
-    //   const { bufferElements } = this._terminal.viewport.getBufferElements(0);
-    //   for (const element of bufferElements) {
-    //     if (element.textContent) {
-    //       element.textContent = element.textContent.replace(new RegExp(' ', 'g'), '\xA0');
-    //     }
-    //   }
-    //   this._element.replaceChildren(...bufferElements);
-    // } 
+    const bufferElements = this._provider?.provideBufferElements();
+    if (!bufferElements) {
+      const { bufferElements } = this._terminal.viewport.getBufferElements(0);
+      for (const element of bufferElements) {
+        if (element.textContent) {
+          element.textContent = element.textContent.replace(new RegExp(' ', 'g'), '\xA0');
+        }
+      }
+      this._element.replaceChildren(...bufferElements);
+    } else {
+      this._element.replaceChildren(bufferElements);
+    }
   }
 
   private _handleColorChange(colorSet: ReadonlyColorSet): void {

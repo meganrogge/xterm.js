@@ -1109,12 +1109,12 @@ declare module 'xterm' {
      */
     loadAddon(addon: ITerminalAddon): void;
 
-   /*
-    * Registers a buffer element provider which will provide a custom element to
-    * use in the terminal's accessible buffer. Using this an xterm.js embedder
-    * has full control over how the buffer is represented in the DOM.
-    * @param bufferElementProvider The buffer element provider.
-    */
+    /*
+     * Registers a buffer element provider which will provide a custom element to
+     * use in the terminal's accessible buffer. Using this an xterm.js embedder
+     * has full control over how the buffer is represented in the DOM.
+     * @param bufferElementProvider The buffer element provider.
+     */
     registerBufferElementProvider(bufferProvider: IBufferElementProvider): IDisposable;
   }
 
@@ -1173,32 +1173,32 @@ declare module 'xterm' {
      * @param text The text of the link.
      * @param range The buffer range of the link.
      */
-     activate(event: MouseEvent, text: string, range: IBufferRange): void;
+    activate(event: MouseEvent, text: string, range: IBufferRange): void;
 
-     /**
-      * Called when the mouse hovers the link. To use this to create a DOM-based hover tooltip,
-      * create the hover element within `Terminal.element` and add the `xterm-hover` class to it,
-      * that will cause mouse events to not fall through and activate other links.
-      * @param event The mouse event triggering the callback.
-      * @param text The text of the link.
-      * @param range The buffer range of the link.
-      */
-     hover?(event: MouseEvent, text: string, range: IBufferRange): void;
+    /**
+     * Called when the mouse hovers the link. To use this to create a DOM-based hover tooltip,
+     * create the hover element within `Terminal.element` and add the `xterm-hover` class to it,
+     * that will cause mouse events to not fall through and activate other links.
+     * @param event The mouse event triggering the callback.
+     * @param text The text of the link.
+     * @param range The buffer range of the link.
+     */
+    hover?(event: MouseEvent, text: string, range: IBufferRange): void;
 
-     /**
-      * Called when the mouse leaves the link.
-      * @param event The mouse event triggering the callback.
-      * @param text The text of the link.
-      * @param range The buffer range of the link.
-      */
-     leave?(event: MouseEvent, text: string, range: IBufferRange): void;
+    /**
+     * Called when the mouse leaves the link.
+     * @param event The mouse event triggering the callback.
+     * @param text The text of the link.
+     * @param range The buffer range of the link.
+     */
+    leave?(event: MouseEvent, text: string, range: IBufferRange): void;
 
-     /**
-      * Whether to receive non-HTTP URLs from LinkProvider. When false, any usage of non-HTTP URLs
-      * will be ignored. Enabling this option without proper protection in `activate` function
-      * may cause security issues such as XSS.
-      */
-     allowNonHttpProtocols?: boolean;
+    /**
+     * Whether to receive non-HTTP URLs from LinkProvider. When false, any usage of non-HTTP URLs
+     * will be ignored. Enabling this option without proper protection in `activate` function
+     * may cause security issues such as XSS.
+     */
+    allowNonHttpProtocols?: boolean;
   }
 
   /**
@@ -1370,9 +1370,9 @@ declare module 'xterm' {
 
   export interface IBufferElementProvider {
     /**
-     * Provides a document fragment containing the buffer elements.
+     * Provides a document fragment or HTMLElement containing the buffer elements.
      */
-    provideBufferElements(): DocumentFragment;
+    provideBufferElements(): DocumentFragment | HTMLElement;
   }
 
   /**
