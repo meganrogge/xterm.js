@@ -11,7 +11,7 @@ import { getSafariVersion, isSafari } from 'common/Platform';
 import { ICoreService, IDecorationService, IOptionsService } from 'common/services/Services';
 import { ITerminalAddon, Terminal } from 'xterm';
 import { WebglRenderer } from './WebglRenderer';
-
+sdfds
 export class WebglAddon extends Disposable implements ITerminalAddon {
   private _terminal?: Terminal;
   private _renderer?: WebglRenderer;
