@@ -1,25 +1,6 @@
 /**
  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
- * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
- * @license MIT
- *
- * Originally forked from (with the author's permission):
- *   Fabrice Bellard's javascript vt100 for jslinux:
- *   http://bellard.org/jslinux/
- *   Copyright (c) 2011 Fabrice Bellard
- *   The original design remains. The terminal itself
- *   has been extended to include xterm CSI codes, among
- *   other features.
- *
- * Terminal Emulation References:
- *   http://vt100.net/
- *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.txt
- *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
- *   http://invisible-island.net/vttest/
- *   http://www.inwap.com/pdp10/ansicode.txt
- *   http://linux.die.net/man/4/console_codes
- *   http://linux.die.net/man/7/urxvt
- */
+
 
 import { copyHandler, handlePasteEvent, moveTextAreaUnderMouseCursor, paste, rightClickHandler } from 'browser/Clipboard';
 import { addDisposableDomListener } from 'browser/Lifecycle';
@@ -33,19 +14,7 @@ import { OverviewRulerRenderer } from 'browser/decorations/OverviewRulerRenderer
 import { CompositionHelper } from 'browser/input/CompositionHelper';
 import { DomRenderer } from 'browser/renderer/dom/DomRenderer';
 import { IRenderer } from 'browser/renderer/shared/Types';
-import { CharSizeService } from 'browser/services/CharSizeService';
-import { CharacterJoinerService } from 'browser/services/CharacterJoinerService';
-import { CoreBrowserService } from 'browser/services/CoreBrowserService';
-import { MouseService } from 'browser/services/MouseService';
-import { RenderService } from 'browser/services/RenderService';
-import { SelectionService } from 'browser/services/SelectionService';
-import { ICharSizeService, ICharacterJoinerService, ICoreBrowserService, IMouseService, IRenderService, ISelectionService, IThemeService } from 'browser/services/Services';
-import { ThemeService } from 'browser/services/ThemeService';
-import { color, rgba } from 'common/Color';
-import { CoreTerminal } from 'common/CoreTerminal';
-import { EventEmitter, IEvent, forwardEvent } from 'common/EventEmitter';
-import { MutableDisposable, toDisposable } from 'common/Lifecycle';
-import * as Browser from 'common/Platform';
+import { CharSizeService }form';
 import { ColorRequestType, CoreMouseAction, CoreMouseButton, CoreMouseEventType, IColorEvent, ITerminalOptions, KeyboardResultType, ScrollSource, SpecialColorIndex } from 'common/Types';
 import { DEFAULT_ATTR_DATA } from 'common/buffer/BufferLine';
 import { IBuffer } from 'common/buffer/Types';
